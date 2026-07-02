@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Редактировать статью</h2>
+
+    <form method="post" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+
+        <label for="title">{{ form.title.label }}</label>
+        {{ form.title(size=64) }} <br>
+
+        <label for="content">{{ form.content.label }}</label>
+        {{ form.content(rows=5, cols=50, id="content") }} <br>
+
+        <!-- Поле загрузки Word-файла -->
+        <label for="word-file">Загрузить текст из файла (.docx):</label>
+        <input type="file" name="word_file" id="word-file" accept=".docx"> <br>
+
+        <!-- Показываем текущее изображение, если оно есть -->
+        {% if article.image_paths %}
+            <p>Текущие изображения:</p>
+            {% for img in article.image_paths.split(';') %}
+                <img src="{{ url_for('static', filename=img) }}" alt="Текущее изображение" style="max-width: 300px;"><br>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Поле загрузки нового изображения -->
+        <label for="image">Заменить изображение:</label>
+        <input type="file" name="image" id="image"> <br>
+
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        let contentField = document.getElementById("content");
+        let dropArea = document.getElementById("drop-area");
+
+        // Вставка изображения через Ctrl+V
+        document.addEventListener("paste", async (event) => {
+            let items = (event.clipboardData || event.originalEvent.clipboardData).items;
+            for (let item of items) {
+                if (item.kind === "file") {
+                    let file = item.getAsFile();
+                    uploadImage(file);
+                }
+            }
+        });
+
+        // Drag & Drop для изображений
+        dropArea.addEventListener("dragover", (event) => {
+            event.preventDefault();
+            dropArea.style.border = "2px dashed #00bcd4";
+        });
+
+        dropArea.addEventListener("dragleave", () => {
+            dropArea.style.border = "2px dashed #ccc";
+        });
+
+        dropArea.addEventListener("drop", async (event) => {
+            event.preventDefault();
+            let file = event.dataTransfer.files[0];
+            if (file && file.type.startsWith("image/")) {
+                uploadImage(file);
+            }
+        });
+
+        async function uploadImage(file) {
+            let formData = new FormData();
+            formData.append("image", file);
+
+            let response = await fetch("{{ url_for('upload_image') }}", {
+                method: "POST",
+                body: formData
+            });
+
+            let data = await response.json();
+            if (data.success) {
+                let imgTag = `\n<img src="${data.url}" alt="Изображение">\n`;
+                contentField.value += imgTag;
+            } else {
+                alert("Ошибка загрузки изображения!");
+            }
+        }
+
+        // Обработчик загрузки Word-файла
+        document.getElementById("word-file").addEventListener("change", async function(event) {
+            let file = event.target.files[0];
+            if (!file) return;
+
+            let formData = new FormData();
+            formData.append("word_file", file);
+
+            let response = await fetch("{{ url_for('upload_word') }}", {
+                method: "POST",
+                body: formData
+            });
+
+            let data = await response.json();
+            if (data.success) {
+                contentField.value = data.text;  // Заменяем содержимое статьи
+            } else {
+                alert("Ошибка загрузки файла!");
+            }
+        });
+
+    });
+    </script>
+
+{% endblock %}

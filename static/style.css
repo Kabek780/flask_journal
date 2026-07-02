@@ -1,0 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+/* Основные стили */
+body {
+    font-family: 'Roboto', sans-serif;
+    font-size: 21px;
+    color: #333;
+    line-height: 1.6;
+    background-color: #e8f5e9; /* Светло-зеленый фон */
+    margin: 0;
+    padding: 0;
+}
+
+/* Навигация */
+nav {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: #2e7d32; /* Темно-зеленый фон для навигации */
+    color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Добавление тени для объема */
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin-right: 15px;
+    outline-style: solid;
+    outline-width: 2px;
+    border-radius: 7px;
+    outline-offset: 4px;
+    outline-color: rgba(255, 255, 255, 0.5); /* Более мягкий контур */
+    transition: outline-color 0.3s ease; /* Плавное изменение цвета контура */
+}
+
+nav a:hover {
+    outline-color: rgba(255, 255, 255, 0.8); /* Ярче при наведении */
+}
+
+.username {
+    margin-left: auto;
+    margin-right: 15px;
+    font-weight: bold;
+}
+
+/* Контейнер навигации */
+.nav-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.balance-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Кнопка покупки */
+.btn-buy {
+    background-color: #388e3c; /* Темно-зеленый */
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.btn-buy:hover {
+    background-color: #1b5e20; /* Еще темнее при наведении */
+}
+
+/* Форма поиска */
+.search-form {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.search-form input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 200px;
+    transition: border-color 0.3s ease; /* Плавное изменение границы */
+}
+
+.search-form input:focus {
+    border-color: #2e7d32; /* Подсветка при фокусе */
+    outline: none;
+}
+
+.search-form button {
+    padding: 8px;
+    background-color: #1b5e20; /* Темно-зеленый */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.search-form button:hover {
+    background-color: #388e3c; /* Светлее при наведении */
+}
+
+/* Дополнительные элементы */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff; /* Белый фон для контента */
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+h1, h2, h3 {
+    color: #2e7d32; /* Заголовки в темно-зеленом цвете */
+}
+
+p {
+    color: #43a047; /* Текст в светло-зеленом цвете */
+}

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>{{ article.title }}</h2>
+
+    {% if article.image_paths %}
+        <img src="{{ url_for('static', filename=article.image_paths) }}" alt="Изображение статьи" style="max-width: 300px;">
+    {% endif %}
+
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                {% if "удалена" not in message and "создана" not in message and "Баланс пополнен" not in message %}  
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Стили для корректного отображения длинного текста -->
+    <style>
+        .article-content {
+            white-space: pre-wrap;  /* Сохраняет переносы строк */
+            word-wrap: break-word;  /* Переносит длинные слова */
+            overflow-wrap: break-word;  /* Альтернативный способ для длинных слов */
+            max-width: 100%;  /* Ограничивает ширину, чтобы не выходило за экран */
+        }
+    </style>
+
+    <!-- Применяем стили к тексту статьи -->
+    <p class="article-content">{{ article.content | safe }}</p>
+
+    <small>Автор: {{ article.author.username }} | Дата: {{ article.created_at.strftime('%d-%m-%Y') }}</small>
+
+    <br><br>
+
+    <!-- Кнопка удаления статьи (только для автора или администратора) -->
+    {% if current_user.id == article.author_id or current_user.is_admin %}
+        <form action="{{ url_for('delete_article', article_id=article.id) }}" method="POST" style="display: inline;">
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Вы уверены, что хотите удалить статью?');">
+                Удалить статью
+            </button>
+        </form>
+    {% endif %}
+
+    <!-- Кнопка "Назад" -->
+    <a href="{{ url_for('index') }}">
+        <button class="btn btn-secondary">Назад</button>
+    </a>
+
+{% endblock %}

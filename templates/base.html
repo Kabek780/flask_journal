@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Охота и рыбалка{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <nav class="nav-container">
+        <a href="{{ url_for('index') }}">Главная</a>
+
+        <!-- Форма поиска -->
+        <form action="{{ url_for('search') }}" method="GET" class="search-form">
+            <input type="text" name="q" placeholder="Поиск статей..." required>
+            <button type="submit">🔍</button>
+        </form>
+
+        {% if current_user.is_authenticated %}
+            <div class="user-info">
+                <span class="username">Вы вошли как: {{ current_user.username }}</span>
+
+                <div class="balance-container">
+                    <span>Баланс: {{ current_user.balance }}р</span>
+                    <form action="{{ url_for('buy') }}" method="post">
+                        <button type="submit" class="btn-buy">Купить (1000р)</button>
+                    </form>
+                </div>
+
+                {% if current_user.is_admin %}
+                    <a href="{{ url_for('admin_visits') }}" class="btn btn-warning">Посещаемость</a>
+                {% endif %}
+
+                <a href="{{ url_for('logout') }}">Выйти</a>
+            </div>
+        {% else %}
+            <a href="{{ url_for('login') }}">Войти</a>
+            <a href="{{ url_for('register') }}">Регистрация</a>
+        {% endif %}
+    </nav>
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+</body>
+</html>

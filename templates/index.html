@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Добро пожаловать в журнал "Охота и рыбалка"!</h2>
+
+    {% if current_user.is_authenticated %}
+        <a href="{{ url_for('create_article') }}">
+            <button class="btn btn-success">Создать статью</button>
+        </a>
+    {% endif %}
+
+    <h3>Последние статьи</h3>
+   {% for article in articles %}
+       <div class="article">
+           <h4>
+               <a href="{{ url_for('view_article', article_id=article.id) }}">{{ article.title }}</a>
+           </h4>
+           {% if article.image_path %}
+               <img src="{{ url_for('static', filename=article.image_path) }}" alt="Изображение статьи" style="max-width: 300px;">
+           {% endif %}
+           <p>{{ article.content[:200] }}...</p>
+           <small>Автор: {{ article.author.username }} | Дата: {{ article.created_at.strftime('%d-%m-%Y') }}</small>
+        
+           {% if current_user.is_authenticated and (current_user.id == article.author_id or current_user.is_admin) %}
+               <form action="{{ url_for('delete_article', article_id=article.id) }}" method="post" style="display:inline;">
+                   <button class="btn btn-danger" type="submit" onclick="return confirm('Удалить статью?');">Удалить</button>
+               </form>
+           {% endif %}
+
+           {% if current_user.is_authenticated and article.author_id == current_user.id %}
+               <a href="{{ url_for('edit_article', article_id=article.id) }}">
+                   <button class="btn btn-warning">Редактировать</button>
+               </a>
+           {% endif %}
+           <hr>
+       </div>
+   {% endfor %}
+
+{% endblock %}

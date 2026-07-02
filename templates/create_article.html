@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Создать статью</h2>
+
+    <form method="post" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+
+        <label for="title">{{ form.title.label }}</label>
+        {{ form.title(size=64) }} <br>
+
+        <label for="content">{{ form.content.label }}</label>
+        {{ form.content(rows=5, cols=50, id="content") }} <br>
+
+        <!-- Поле загрузки Word-файла -->
+        <label for="word-file">Загрузить текст из файла (.docx):</label>
+        <input type="file" name="word_file" id="word-file" accept=".docx"> <br>
+
+        <!-- Поле для изображения -->
+        <label for="image">Добавить изображение:</label>
+        <input type="file" name="image" id="image"> <br>
+
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
+
+    <script>
+    // Обработчик загрузки Word-файла
+    document.getElementById("word-file").addEventListener("change", async function(event) {
+        let file = event.target.files[0];
+        if (!file) return;
+
+        let formData = new FormData();
+        formData.append("word_file", file);
+
+        let response = await fetch("{{ url_for('upload_word') }}", {
+            method: "POST",
+            body: formData
+        });
+
+        let data = await response.json();
+        if (data.success) {
+            // Заполняем поле content текстом из Word
+            document.getElementById("content").value = data.text;  // Заменяем содержимое статьи
+        } else {
+            alert("Ошибка загрузки файла!");
+        }
+    });
+    </script>
+
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Посещаемость сайта</h2>
+
+    <!-- Контейнер для графика -->
+    <canvas id="visitChart"></canvas>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Пользователь</th>
+                <th>IP</th>
+                <th>User-Agent</th>
+                <th>Дата</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for visit in visits %}
+                <tr>
+                    <td>{{ visit.id }}</td>
+                    <td>
+                        {% if visit.user %}
+                            <a href="{{ url_for('user_profile', user_id=visit.user.id) }}">{{ visit.user.username }}</a>
+                        {% else %}
+                            Гость
+                        {% endif %}
+                    </td>
+
+                    <td>{{ visit.ip_address }}</td>
+                    <td>{{ visit.user_agent }}</td>
+                    <td>{{ visit.timestamp.strftime('%d-%m-%Y %H:%M:%S') }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">Назад</a>
+
+    <!-- Подключаем Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Данные из Flask (даты и количество посещений)
+        let dates = {{ dates | tojson }};
+        let counts = {{ counts | tojson }};
+        let futureDates = {{ future_dates | tojson }};
+        let futureCounts = {{ future_counts | tojson }};
+
+        let ctx = document.getElementById('visitChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: dates.concat(futureDates),  // Объединяем прошлые даты с прогнозируемыми
+                datasets: [
+                    {
+                        label: 'Фактические посещения',
+                        data: counts.concat(Array(futureDates.length).fill(null)),  // Реальные данные
+                        borderColor: 'blue',
+                        backgroundColor: 'rgba(0, 0, 255, 0.2)',
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Прогноз посещаемости',
+                        data: Array(dates.length).fill(null).concat(futureCounts),  // Прогнозируемые данные
+                        borderColor: 'red',
+                        backgroundColor: 'rgba(255, 0, 0, 0.2)',
+                        borderWidth: 2,
+                        borderDash: [5, 5]  // Пунктирная линия
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'Дата' } },
+                    y: { title: { display: true, text: 'Посещения' }, beginAtZero: true }
+                }
+            }
+        });
+    </script>
+{% endblock %}
